@@ -4,82 +4,72 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private List<Collider2D> grabCheckColliders;
+
+    private List<GrabZoneController> grabZones;
+    private List<GameObject> grabbableObjects;
+    private GameObject grabbedObject;
 
     private bool canMove = true;
-    private Vector2 direction = Vector2.zero;
     private float moveSpeed = 5.0f;
+
+    private Vector2 velocity = Vector2.zero;
+    private DIRECTION direction = DIRECTION.UP;
+
+    public enum DIRECTION
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
-        grabCheckColliders = new List<Collider2D>();
-        grabCheckColliders.Add(GameObject.Find("Left Grabber").GetComponent<Collider2D>());
-        grabCheckColliders.Add(GameObject.Find("Right Grabber").GetComponent<Collider2D>());
-        grabCheckColliders.Add(GameObject.Find("Up Grabber").GetComponent<Collider2D>());
-        grabCheckColliders.Add(GameObject.Find("Down Grabber").GetComponent<Collider2D>());
+        grabZones = new List<GrabZoneController> { 
+            GameObject.Find("Up Grabber").GetComponent<GrabZoneController>(),
+            GameObject.Find("Down Grabber").GetComponent<GrabZoneController>(),
+            GameObject.Find("Left Grabber").GetComponent<GrabZoneController>(),
+            GameObject.Find("Right Grabber").GetComponent<GrabZoneController>()
+        };
     }
 
     void FixedUpdate()
     {
         PlayerMovement();
-        HandleColliders();
         CarryItem();
     }
 
     private void PlayerMovement()
     {
+        velocity = Vector2.zero;
+
         if (Input.GetKey(KeyCode.W))
         {
-            direction += new Vector2(0, 1);
+            velocity += new Vector2(0, 1);
+            direction = DIRECTION.UP;
         } 
         if (Input.GetKey(KeyCode.S))
         {
-            direction += new Vector2(0, -1);
+            velocity += new Vector2(0, -1);
+            direction = DIRECTION.DOWN;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            direction += new Vector2(-1, 0);
+            velocity += new Vector2(-1, 0);
+            direction = DIRECTION.LEFT;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            direction += new Vector2(1, 0);
+            velocity += new Vector2(1, 0);
+            direction = DIRECTION.RIGHT;
         }
-        direction.Normalize();
+        velocity.Normalize();
 
         if (canMove)
         {
-            rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
-        }
-    }
-
-    private void HandleColliders()
-    {
-        foreach (Collider2D col in grabCheckColliders)
-        {
-            col.gameObject.SetActive(false);
-        }
-
-        if (direction.x < 0)
-        {
-            //Turn on left collider
-            grabCheckColliders[1].gameObject.SetActive(true);
-        }
-        else if (direction.x > 0)
-        {
-            //Turn on right collider
-            grabCheckColliders[0].gameObject.SetActive(true);
-        }
-        else if (direction.y > 0)
-        {
-            //Turn on up collider
-            grabCheckColliders[2].gameObject.SetActive(true);
-        }
-        else if (direction.y > 0)
-        {
-            //Turn on down collider
-            grabCheckColliders[3].gameObject.SetActive(true);
+            rb.MovePosition(rb.position + velocity * moveSpeed * Time.fixedDeltaTime);
         }
     }
 
@@ -90,11 +80,41 @@ public class PlayerController : MonoBehaviour
         {
             //Tell object youre held
             Debug.Log("Holdin that johgn");
+
+            GameObject grabbableObj = null;
+            switch (direction) {
+                case DIRECTION.UP:
+                    grabbableObj = grabZones[0].GetNearestObj();
+                    break;
+                case DIRECTION.DOWN:
+                    grabbableObj = grabZones[1].GetNearestObj();
+                    break;
+                case DIRECTION.LEFT:
+                    grabbableObj = grabZones[2].GetNearestObj();
+                    break;
+                case DIRECTION.RIGHT:
+                    grabbableObj = grabZones[3].GetNearestObj();
+                    break;
+            }
+
+            if (grabbableObj != null)
+            {
+                grabbableObj.GetComponent<GrabbableItem>().Grabbed(this.gameObject);
+                grabbedObject = grabbableObj;
+            }
         }
         if (Input.GetMouseButtonUp(0))
         {
-            //Tell object youre not held
-            Debug.Log("Dropped that John");
+            if (grabbedObject != null) 
+            {
+                grabbedObject.GetComponent<GrabbableItem>().Dropped();
+                grabbedObject = null;
+            }
         }
+    }
+
+    public DIRECTION GetDirection()
+    {
+        return direction;
     }
 }
