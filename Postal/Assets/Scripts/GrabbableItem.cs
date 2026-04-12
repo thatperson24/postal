@@ -27,6 +27,7 @@ public class GrabbableItem : MonoBehaviour
 
     public void Grabbed(GameObject parent)
     {
+        gameObject.tag = "Grabbed";
         parentObj = parent;
         isGrabbed = true;
     }
@@ -56,6 +57,7 @@ public class GrabbableItem : MonoBehaviour
 
     public void Dropped()
     {
+        gameObject.tag = "Grabbable";
         parentObj = null;
         isGrabbed = false;
     }
