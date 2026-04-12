@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 velocity = Vector2.zero;
     private DIRECTION direction = DIRECTION.UP;
 
+    private Camera mainCamera;
     public enum DIRECTION
     {
         UP,
@@ -33,10 +34,13 @@ public class PlayerController : MonoBehaviour
             GameObject.Find("Left Grabber").GetComponent<GrabZoneController>(),
             GameObject.Find("Right Grabber").GetComponent<GrabZoneController>()
         };
+
+        mainCamera = Camera.main;
     }
 
     void Update()
     {
+        Throw();
         PlayerMovement();
         CarryItem();
     }
@@ -117,5 +121,25 @@ public class PlayerController : MonoBehaviour
     public DIRECTION GetDirection()
     {
         return direction;
+    }
+
+    public void Throw()
+    {
+        if (Input.GetMouseButtonDown(1) && grabbedObject != null)
+        {
+            Vector2 mousePos = Input.mousePosition;
+
+            Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y)
+            );
+            // Step 3: Convert world position to local position relative to this GameObject
+            Vector2 localPos = transform.InverseTransformPoint(mouseWorldPos);
+
+            // Debug output
+            //Debug.Log($"Mouse Local Position relative to {gameObject.name}: {localPos}");
+            Debug.Log($"Mouse World pos: {mouseWorldPos}");
+
+            grabbedObject.GetComponent<GrabbableItem>().Thrown(mouseWorldPos);
+            grabbedObject = null;
+        }
     }
 }

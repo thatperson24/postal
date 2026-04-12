@@ -1,11 +1,19 @@
 using UnityEditor.Rendering;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class GrabbableItem : MonoBehaviour
 {
     private GameObject parentObj;
     private bool isGrabbed;
     private Vector2 offset;
+
+    //throwing stuff
+    private float moveSpeed = 2.0f;
+    private Rigidbody2D rb;
+    private bool thrown = false;
+    private Vector2 targetPos;
+    private float maxThrowDistance = 3f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,6 +31,14 @@ public class GrabbableItem : MonoBehaviour
         if (isGrabbed) 
         { 
             UpdateOffset();
+        }
+        if (thrown)
+        {
+            gameObject.transform.position = Vector2.Lerp(gameObject.transform.position, targetPos, moveSpeed * Time.deltaTime);
+            if(Vector2.Distance(gameObject.transform.position, targetPos) < 0.1f)
+            {
+                thrown = false;
+            }
         }
     }
 
@@ -63,5 +79,21 @@ public class GrabbableItem : MonoBehaviour
         this.gameObject.transform.parent = null;
         parentObj = null;
         isGrabbed = false;
+    }
+
+    public void Thrown(Vector2 target)
+    {
+        thrown = true;
+        targetPos = target;
+
+        if (Vector2.Distance(parentObj.transform.position, target) > maxThrowDistance && parentObj != null)
+        {
+            Vector2 direction = target - (Vector2)parentObj.transform.position;
+            Vector2 newTarget = (Vector2)parentObj.transform.position + direction.normalized * maxThrowDistance;
+           
+            targetPos = newTarget;
+        }
+        transform.position = parentObj.transform.position;
+        Dropped();
     }
 }
