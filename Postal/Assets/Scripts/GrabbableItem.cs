@@ -1,3 +1,4 @@
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class GrabbableItem : MonoBehaviour
@@ -29,6 +30,7 @@ public class GrabbableItem : MonoBehaviour
     {
         gameObject.tag = "Grabbed";
         parentObj = parent;
+        gameObject.transform.parent = parentObj.transform;
         isGrabbed = true;
     }
 
@@ -52,12 +54,13 @@ public class GrabbableItem : MonoBehaviour
                 break;
         }
         
-        this.gameObject.transform.position = (Vector2)parentObj.transform.position + offset;
+        this.gameObject.transform.localPosition = offset;
     }
 
     public void Dropped()
     {
         gameObject.tag = "Grabbable";
+        this.gameObject.transform.parent = null;
         parentObj = null;
         isGrabbed = false;
     }
