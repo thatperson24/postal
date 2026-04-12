@@ -39,8 +39,48 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         PlayerMovement();
+        PlayerDirection();
         CarryItem();
         CastSpells();
+    }
+
+    private void PlayerDirection()
+    {
+        //This section will set direction to the most recent key pressed
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            direction = DIRECTION.UP;
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            direction = DIRECTION.DOWN;
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            direction = DIRECTION.LEFT;
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            direction = DIRECTION.RIGHT;
+        }
+
+        //This section will reset the direction if a key is let go of and there is still velocity
+        if (velocity == Vector2.up) 
+        {
+            direction = DIRECTION.UP;
+        }
+        if (velocity == Vector2.down)
+        {
+            direction = DIRECTION.DOWN;
+        }
+        if (velocity == Vector2.left)
+        {
+            direction = DIRECTION.LEFT;
+        }
+        if (velocity == Vector2.right)
+        {
+            direction = DIRECTION.RIGHT;
+        }
     }
 
     private void PlayerMovement()
@@ -49,23 +89,19 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            velocity += new Vector2(0, 1);
-            direction = DIRECTION.UP;
+            velocity += Vector2.up;
         } 
         if (Input.GetKey(KeyCode.S))
         {
-            velocity += new Vector2(0, -1);
-            direction = DIRECTION.DOWN;
+            velocity += Vector2.down;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            velocity += new Vector2(-1, 0);
-            direction = DIRECTION.LEFT;
+            velocity += Vector2.left;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            velocity += new Vector2(1, 0);
-            direction = DIRECTION.RIGHT;
+            velocity += Vector2.right;
         }
         velocity.Normalize();
 
@@ -115,6 +151,8 @@ public class PlayerController : MonoBehaviour
 
     private void CastSpells()
     {
+        if (grabbedObject != null) return;
+
         //On space press, start recording key inputs
         if (Input.GetKeyDown(KeyCode.Space))
         {
