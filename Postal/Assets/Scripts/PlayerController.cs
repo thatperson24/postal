@@ -6,11 +6,12 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
 
     private List<GrabZoneController> grabZones;
-    private List<GameObject> grabbableObjects;
     private GameObject grabbedObject;
 
     private bool canMove = true;
     private float moveSpeed = 5.0f;
+    private bool castingSpell = false;
+    private string spellString = "";
 
     private Vector2 velocity = Vector2.zero;
     private DIRECTION direction = DIRECTION.UP;
@@ -42,7 +43,48 @@ public class PlayerController : MonoBehaviour
     {
         Throw();
         PlayerMovement();
+        PlayerDirection();
         CarryItem();
+        CastSpells();
+    }
+
+    private void PlayerDirection()
+    {
+        //This section will set direction to the most recent key pressed
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            direction = DIRECTION.UP;
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            direction = DIRECTION.DOWN;
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            direction = DIRECTION.LEFT;
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            direction = DIRECTION.RIGHT;
+        }
+
+        //This section will reset the direction if a key is let go of and there is still velocity
+        if (velocity == Vector2.up) 
+        {
+            direction = DIRECTION.UP;
+        }
+        if (velocity == Vector2.down)
+        {
+            direction = DIRECTION.DOWN;
+        }
+        if (velocity == Vector2.left)
+        {
+            direction = DIRECTION.LEFT;
+        }
+        if (velocity == Vector2.right)
+        {
+            direction = DIRECTION.RIGHT;
+        }
     }
 
     private void PlayerMovement()
@@ -51,23 +93,19 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            velocity += new Vector2(0, 1);
-            direction = DIRECTION.UP;
+            velocity += Vector2.up;
         } 
         if (Input.GetKey(KeyCode.S))
         {
-            velocity += new Vector2(0, -1);
-            direction = DIRECTION.DOWN;
+            velocity += Vector2.down;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            velocity += new Vector2(-1, 0);
-            direction = DIRECTION.LEFT;
+            velocity += Vector2.left;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            velocity += new Vector2(1, 0);
-            direction = DIRECTION.RIGHT;
+            velocity += Vector2.right;
         }
         velocity.Normalize();
 
@@ -79,12 +117,9 @@ public class PlayerController : MonoBehaviour
 
     private void CarryItem()
     {
-        //If colliding
+        //On down click, check if there is an object in the direction you are looking
         if (Input.GetMouseButtonDown(0))
         {
-            //Tell object youre held
-            Debug.Log("Holdin that johgn");
-
             GameObject grabbableObj = null;
             switch (direction) {
                 case DIRECTION.UP:
@@ -107,13 +142,57 @@ public class PlayerController : MonoBehaviour
                 grabbedObject = grabbableObj;
             }
         }
+        //On let go of click, drop the item you are holding
         if (Input.GetMouseButtonUp(0))
         {
-            Debug.Log("Dropper");
             if (grabbedObject != null) 
             {
                 grabbedObject.GetComponent<GrabbableItem>().Dropped();
                 grabbedObject = null;
+            }
+        }
+    }
+
+    private void CastSpells()
+    {
+        if (grabbedObject != null) return;
+
+        //On space press, start recording key inputs
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (!castingSpell)
+            {
+                castingSpell = true;
+            }
+        }
+        //On let go of space, send the spell combo to spell manager
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            castingSpell = false;
+            gameObject.GetComponent<SpellController>().CastSpell(spellString);
+            spellString = "";
+        }
+    }
+
+    //This records the key presses, only functions while castingSpell (holding down space bar)
+    void OnGUI()
+    {
+        if (castingSpell && Event.current.isKey && Event.current.type == EventType.KeyDown)
+        {
+            switch (Event.current.keyCode)
+            {
+                case KeyCode.UpArrow:
+                    spellString += "U";
+                    break;
+                case KeyCode.DownArrow:
+                    spellString += "D";
+                    break;
+                case KeyCode.LeftArrow:
+                    spellString += "L";
+                    break;
+                case KeyCode.RightArrow:
+                    spellString += "R";
+                    break;
             }
         }
     }
