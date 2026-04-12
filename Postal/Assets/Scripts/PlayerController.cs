@@ -210,12 +210,6 @@ public class PlayerController : MonoBehaviour
 
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y)
             );
-            // Step 3: Convert world position to local position relative to this GameObject
-            Vector2 localPos = transform.InverseTransformPoint(mouseWorldPos);
-
-            // Debug output
-            //Debug.Log($"Mouse Local Position relative to {gameObject.name}: {localPos}");
-            Debug.Log($"Mouse World pos: {mouseWorldPos}");
 
             grabbedObject.GetComponent<GrabbableItem>().Thrown(mouseWorldPos);
             grabbedObject = null;
