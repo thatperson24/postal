@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
         };
     }
 
-    void FixedUpdate()
+    void Update()
     {
         PlayerMovement();
         CarryItem();
@@ -105,6 +105,7 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0))
         {
+            Debug.Log("Dropper");
             if (grabbedObject != null) 
             {
                 grabbedObject.GetComponent<GrabbableItem>().Dropped();
