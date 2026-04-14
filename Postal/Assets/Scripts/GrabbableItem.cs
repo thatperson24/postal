@@ -1,5 +1,6 @@
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 
 public class GrabbableItem : MonoBehaviour
@@ -10,14 +11,18 @@ public class GrabbableItem : MonoBehaviour
 
     //throwing stuff
     private float moveSpeed = 2.0f;
-    private Rigidbody2D rb;
     private bool thrown = false;
     private Vector2 targetPos;
     private float maxThrowDistance = 3f;
+
+    //spell stuff
+    private bool recalled = false;
+    private bool postRecall = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        parentObj = null;    
+        parentObj = null;
     }
 
     // Update is called once per frame
@@ -40,6 +45,29 @@ public class GrabbableItem : MonoBehaviour
                 thrown = false;
             }
         }
+        if (recalled)
+        {
+            if (!postRecall)
+            {
+                Vector2 position1 = gameObject.transform.position;
+                gameObject.transform.position = Vector2.Lerp(gameObject.transform.position, parentObj.transform.position, moveSpeed * Time.deltaTime);
+                Vector2 position2 = gameObject.transform.position;
+                if (Vector2.Distance(position1, position2) < 0.075f)
+                {
+                    postRecall = true;
+                    targetPos = parentObj.transform.position;
+                }
+            }
+            else
+            {
+                gameObject.transform.position = Vector2.Lerp(gameObject.transform.position, targetPos, moveSpeed * Time.deltaTime);
+                if (Vector2.Distance(gameObject.transform.position, targetPos) < 0.1f)
+                {
+                    recalled = false;
+                    postRecall = false;
+                }
+            }
+        }
     }
 
     public void Grabbed(GameObject parent)
@@ -48,6 +76,17 @@ public class GrabbableItem : MonoBehaviour
         parentObj = parent;
         gameObject.transform.parent = parentObj.transform;
         isGrabbed = true;
+        thrown = false;
+        recalled = false;
+        postRecall = false;
+    }
+
+    public void Recalled(GameObject parent)
+    {
+        parentObj = parent;
+        recalled = true;
+        thrown = false;
+        targetPos = parent.transform.position;
     }
 
     public void UpdateOffset()

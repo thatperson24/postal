@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private float moveSpeed = 5.0f;
     private bool castingSpell = false;
     private string spellString = "";
+    private SpellController spellController;
 
     private Vector2 velocity = Vector2.zero;
     private DIRECTION direction = DIRECTION.UP;
@@ -37,6 +38,8 @@ public class PlayerController : MonoBehaviour
         };
 
         mainCamera = Camera.main;
+
+        spellController = GetComponent<SpellController>();
     }
 
     void Update()
@@ -118,7 +121,7 @@ public class PlayerController : MonoBehaviour
     private void CarryItem()
     {
         //On down click, check if there is an object in the direction you are looking
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !spellController.AimingSpell())
         {
             GameObject grabbableObj = null;
             switch (direction) {
@@ -169,7 +172,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space))
         {
             castingSpell = false;
-            gameObject.GetComponent<SpellController>().CastSpell(spellString);
+            spellController.CastSpell(spellString);
             spellString = "";
         }
     }
