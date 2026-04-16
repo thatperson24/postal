@@ -17,7 +17,7 @@ public class SpellController : MonoBehaviour
         AimSpell();
     }
 
-    
+    //Public method that takes the spell input from the player and checks if it matches a spell pattern we recognize
     public void CastSpell(string spellString)
     {
         Debug.Log("Casting spell: " + spellString);
@@ -41,6 +41,7 @@ public class SpellController : MonoBehaviour
         }  
     }
 
+    //If a spell is being cast/aimed, this is how we get the area they clicked on to cast the spell at that location
     private void AimSpell()
     {
         if (Input.GetMouseButtonDown(0) && aimingSpell)
@@ -48,6 +49,7 @@ public class SpellController : MonoBehaviour
             Debug.Log("Fired spell");
             aimingSpell = false;
 
+            //Checks for object on mouse click
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit.transform)
             {

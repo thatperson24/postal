@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //Checks for all of the inputs
         Throw();
         PlayerMovement();
         PlayerDirection();
@@ -51,6 +52,7 @@ public class PlayerController : MonoBehaviour
         CastSpells();
     }
 
+    //Sets player direction based on last movement input (WASD) and the direction youre traveling
     private void PlayerDirection()
     {
         //This section will set direction to the most recent key pressed
@@ -90,6 +92,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //Moves the player based on the WASD input
     private void PlayerMovement()
     {
         velocity = Vector2.zero;
@@ -118,6 +121,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //If there is an item in grab range, holding down left click will grab this item, and letting go will drop it
     private void CarryItem()
     {
         //On down click, check if there is an object in the direction you are looking
@@ -156,6 +160,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //When the player presses space, start recording their arrow key inputs to cast a spell
     private void CastSpells()
     {
         if (grabbedObject != null) return;
