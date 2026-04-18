@@ -125,7 +125,7 @@ public class PlayerController : MonoBehaviour
     private void CarryItem()
     {
         //On down click, check if there is an object in the direction you are looking
-        if (Input.GetMouseButtonDown(0) && !spellController.AimingSpell())
+        if (Input.GetMouseButtonDown(0) && !spellController.GetAimingSpell())
         {
             GameObject grabbableObj = null;
             switch (direction) {
