@@ -51,7 +51,10 @@ public class SpellController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AimSpell();
+        if (Input.GetMouseButtonDown(0) && aimingSpell && currentSpell.GetSpellName() != "No Spell")
+        {
+            AimSpell();
+        }
     }
 
     //Public method that takes the spell input from the player and checks if it matches a spell pattern we recognize
@@ -86,33 +89,41 @@ public class SpellController : MonoBehaviour
     //If a spell is being cast/aimed, this is how we get the area they clicked on to cast the spell at that location
     private void AimSpell()
     {
-        if (Input.GetMouseButtonDown(0) && aimingSpell && currentSpell.GetSpellName() != "No Spell")
+        Debug.Log("Fired spell");
+        
+        if (currentSpell.GetTargetsObject())
         {
-            Debug.Log("Fired spell");
-            aimingSpell = false;
-
             //Checks for object on mouse click
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            if (hit.transform && currentSpell.GetTargetsObject())
+            GameObject clickedObject = hit.transform.gameObject;
+            if (clickedObject != null && clickedObject.tag == "Grabbable")
             {
-                GameObject clickedObject = hit.transform.gameObject;
-                if (clickedObject.tag == "Grabbable")
+                switch (currentSpell.GetSpellName())
                 {
-                    switch (currentSpell.GetSpellName())
-                    {
-                        case "Funny Business":
-                            Debug.Log(clickedObject.name + " just got joked on.");
-                            aimingSpell = false;
-                            break;
-                        case "Recall":
-                            Debug.Log("Recalling " + clickedObject.name);
-                            clickedObject.GetComponent<GrabbableItem>().Recalled(this.gameObject);
-                            break;
-                    }
+                    case "Funny Business":
+                        Debug.Log(clickedObject.name + " just got joked on.");
+                        aimingSpell = false;
+                        break;
+                    case "Recall":
+                        Debug.Log("Recalling " + clickedObject.name);
+                        clickedObject.GetComponent<GrabbableItem>().Recalled(this.gameObject);
+                        break;
                 }
             }
-            currentSpell = new Spell("No Spell", false);
         }
+        else
+        {
+            switch (currentSpell.GetSpellName()) 
+            {
+                case "Deflect":
+                    GameObject newWall = new GameObject();
+                    newWall.AddComponent<Deflect>();
+
+                    break;                    
+            }
+        }
+        currentSpell = new Spell("No Spell", false);
+        aimingSpell = false;
     }
 
     public bool GetAimingSpell()
