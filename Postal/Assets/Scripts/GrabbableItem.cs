@@ -8,21 +8,27 @@ public class GrabbableItem : MonoBehaviour
     private GameObject parentObj;
     private bool isGrabbed;
     private Vector2 offset;
+    private Rigidbody2D rb;
 
     //throwing stuff
-    private float moveSpeed = 2.0f;
+    private float throwStartingSpeed = 8.5f;
+    private float throwSlowingMultiplier = 0.965f;
+    private float throwMinimumSpeed = 0.25f;
     private bool thrown = false;
-    private Vector2 targetPos;
-    private float maxThrowDistance = 3f;
 
     //spell stuff
     private bool recalled = false;
     private bool postRecall = false;
+    private float recallSpeed = 7.5f;
+    private float recallSlowDistance = 1.25f;
+    private float recallSlowingMultiplier = 0.925f;
+    private float recallMinimumSpeed = 0.35f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         parentObj = null;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -39,9 +45,10 @@ public class GrabbableItem : MonoBehaviour
         }
         if (thrown)
         {
-            gameObject.transform.position = Vector2.Lerp(gameObject.transform.position, targetPos, moveSpeed * Time.deltaTime);
-            if(Vector2.Distance(gameObject.transform.position, targetPos) < 0.1f)
+            rb.linearVelocity *= throwSlowingMultiplier;
+            if (rb.linearVelocity.magnitude <= throwMinimumSpeed)
             {
+                rb.linearVelocity = Vector2.zero;
                 thrown = false;
             }
         }
@@ -49,20 +56,21 @@ public class GrabbableItem : MonoBehaviour
         {
             if (!postRecall)
             {
-                Vector2 position1 = gameObject.transform.position;
-                gameObject.transform.position = Vector2.Lerp(gameObject.transform.position, parentObj.transform.position, moveSpeed * Time.deltaTime);
-                Vector2 position2 = gameObject.transform.position;
-                if (Vector2.Distance(position1, position2) < 0.075f)
+                Vector2 direction = (Vector2)parentObj.transform.position - (Vector2)gameObject.transform.position;
+                rb.linearVelocity = direction.normalized * recallSpeed;
+
+                if (Vector2.Distance(gameObject.transform.position, parentObj.transform.position) < recallSlowDistance)
                 {
                     postRecall = true;
-                    targetPos = parentObj.transform.position;
+                    Debug.Log("Post");
                 }
             }
-            else
+            else 
             {
-                gameObject.transform.position = Vector2.Lerp(gameObject.transform.position, targetPos, moveSpeed * Time.deltaTime);
-                if (Vector2.Distance(gameObject.transform.position, targetPos) < 0.1f)
+                rb.linearVelocity *= recallSlowingMultiplier;
+                if (rb.linearVelocity.magnitude <= recallMinimumSpeed)
                 {
+                    rb.linearVelocity = Vector2.zero;
                     recalled = false;
                     postRecall = false;
                 }
@@ -75,6 +83,7 @@ public class GrabbableItem : MonoBehaviour
         gameObject.tag = "Grabbed";
         parentObj = parent;
         gameObject.transform.parent = parentObj.transform;
+        rb.linearVelocity = Vector2.zero;
         isGrabbed = true;
         thrown = false;
         recalled = false;
@@ -84,9 +93,9 @@ public class GrabbableItem : MonoBehaviour
     public void Recalled(GameObject parent)
     {
         parentObj = parent;
+        rb.linearVelocity = Vector2.zero;
         recalled = true;
         thrown = false;
-        targetPos = parent.transform.position;
     }
 
     public void UpdateOffset()
@@ -123,16 +132,11 @@ public class GrabbableItem : MonoBehaviour
     public void Thrown(Vector2 target)
     {
         thrown = true;
-        targetPos = target;
+        Vector2 direction = target - (Vector2)parentObj.transform.position;
 
-        if (Vector2.Distance(parentObj.transform.position, target) > maxThrowDistance && parentObj != null)
-        {
-            Vector2 direction = target - (Vector2)parentObj.transform.position;
-            Vector2 newTarget = (Vector2)parentObj.transform.position + direction.normalized * maxThrowDistance;
-           
-            targetPos = newTarget;
-        }
         transform.position = parentObj.transform.position;
+        rb.linearVelocity = direction.normalized * throwStartingSpeed;
+
         Dropped();
     }
 }

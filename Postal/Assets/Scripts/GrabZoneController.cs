@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -35,9 +36,10 @@ public class GrabZoneController : MonoBehaviour
         }
         return nearestObj;
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Grabbable")
+        if (collision.gameObject.tag == "Grabbable" && !grabbableObjects.Contains(collision.gameObject))
         {
             grabbableObjects.Add(collision.gameObject);
         }

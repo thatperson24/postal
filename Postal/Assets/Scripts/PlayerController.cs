@@ -216,8 +216,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector2 mousePos = Input.mousePosition;
 
-            Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y)
-            );
+            Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(new Vector2(mousePos.x, mousePos.y));
 
             grabbedObject.GetComponent<GrabbableItem>().Thrown(mouseWorldPos);
             grabbedObject = null;
