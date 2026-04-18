@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Grabbable
   - Grabbed
+  - Wall
   layers:
   - Default
   - TransparentFX
