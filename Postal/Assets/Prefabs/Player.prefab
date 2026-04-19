@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3624681370551685973}
   - component: {fileID: 1617267797697054966}
   - component: {fileID: 1538503257453877834}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Left Grabber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 8428119320924108416}
   - component: {fileID: 2480067468664013174}
   - component: {fileID: 5260690343757212648}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Right Grabber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -201,7 +201,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2795759853132599468}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GrabCheckers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,7 +238,7 @@ GameObject:
   - component: {fileID: 3590060500969815672}
   - component: {fileID: 3501845376591411019}
   - component: {fileID: 2363035709256113834}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Up Grabber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -334,9 +334,10 @@ GameObject:
   - component: {fileID: 8119551910379602328}
   - component: {fileID: 1333428498344274764}
   - component: {fileID: 763262152953671593}
+  - component: {fileID: 1782813453724858284}
   - component: {fileID: 4685158502525337266}
   - component: {fileID: 8393426073919924554}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -445,6 +446,57 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!60 &1782813453724858284
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599323868959244451}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.5, y: 0.5}
+      - {x: -0.5, y: -0.5}
+      - {x: 0.5, y: -0.5}
+      - {x: 0.5, y: 0.5}
+  m_UseDelaunayMesh: 1
 --- !u!114 &4685158502525337266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,7 +532,7 @@ GameObject:
   - component: {fileID: 3695885645296699364}
   - component: {fileID: 3494173425319015054}
   - component: {fileID: 5149561836500392729}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Down Grabber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
