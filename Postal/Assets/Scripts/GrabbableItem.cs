@@ -101,6 +101,7 @@ public class GrabbableItem : MonoBehaviour
         parentObj = parent;
         gameObject.transform.parent = parentObj.transform;
         rb.linearVelocity = Vector2.zero;
+        rb.simulated = false;
         isGrabbed = true;
         thrown = false;
         recalled = false;
@@ -143,6 +144,7 @@ public class GrabbableItem : MonoBehaviour
         gameObject.tag = "Grabbable";
         this.gameObject.transform.parent = null;
         parentObj = null;
+        rb.simulated = true;
         isGrabbed = false;
     }
 
