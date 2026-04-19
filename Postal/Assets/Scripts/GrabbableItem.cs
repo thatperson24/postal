@@ -1,7 +1,4 @@
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
 
 public class GrabbableItem : MonoBehaviour
 {
@@ -15,6 +12,7 @@ public class GrabbableItem : MonoBehaviour
     private float throwSlowingMultiplier = 0.965f;
     private float throwMinimumSpeed = 0.25f;
     private bool thrown = false;
+    private Vector2 throwDirection;
 
     //spell stuff
     private bool recalled = false;
@@ -62,7 +60,6 @@ public class GrabbableItem : MonoBehaviour
                 if (Vector2.Distance(gameObject.transform.position, parentObj.transform.position) < recallSlowDistance)
                 {
                     postRecall = true;
-                    Debug.Log("Post");
                 }
             }
             else 
@@ -74,6 +71,26 @@ public class GrabbableItem : MonoBehaviour
                     recalled = false;
                     postRecall = false;
                 }
+            }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Wall")
+        {
+            float currentSpeed = rb.linearVelocity.magnitude;
+            Vector2 normal = ((Vector2)transform.position - collision.ClosestPoint(transform.position)).normalized;
+
+            if (thrown)
+            {
+                rb.linearVelocity = Vector2.Reflect(throwDirection, normal) * currentSpeed * 0.75f;
+            }
+            else if (recalled)
+            {
+                rb.linearVelocity = Vector2.zero;
+                recalled = false;
+                postRecall = false;
             }
         }
     }
@@ -132,10 +149,10 @@ public class GrabbableItem : MonoBehaviour
     public void Thrown(Vector2 target)
     {
         thrown = true;
-        Vector2 direction = target - (Vector2)parentObj.transform.position;
+        throwDirection = (target - (Vector2)parentObj.transform.position).normalized;
 
         transform.position = parentObj.transform.position;
-        rb.linearVelocity = direction.normalized * throwStartingSpeed;
+        rb.linearVelocity = throwDirection * throwStartingSpeed;
 
         Dropped();
     }
